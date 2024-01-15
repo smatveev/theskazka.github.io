@@ -249,9 +249,10 @@
                 <h1 class="text-white m-0">Заполните всего несколько полей</h1>
               </div> -->
               <div class="card-body rounded-bottom bg-primary p-5">
-                <form>
+                <form action="https://formspree.io/f/xwkgpnqp" method="POST">
                   <div class="form-group">
                     <select
+                      name="age"
                       class="custom-select border-0 px-4"
                       style="height: 47px"
                     >
@@ -269,6 +270,7 @@
                   </div>
                   <div class="form-group">
                     <textarea
+                      name="message"
                       type="text"
                       class="form-control border-0 p-4"
                       placeholder="Напишите, пожалуйста, тему для вашей сказки *"
@@ -277,6 +279,7 @@
                   </div>
                   <div class="form-group">
                     <input
+                      name="email"
                       type="email"
                       class="form-control border-0 p-4"
                       placeholder="Напишите, пожалуйста, ваш e-mail *"
@@ -285,12 +288,14 @@
                   </div>                  
                   <div>
                     <button
+                      id="my-form-button"
                       class="btn btn-secondary btn-block border-0 py-3"
                       type="submit"
                     >
                       Отправить ⚡
                     </button>
                   </div>
+                  <p id="my-form-status"></p>
                 </form>
               </div>
             </div>
@@ -465,5 +470,39 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+
+    <script>
+      var form = document.getElementById("my-form");
+      
+      async function handleSubmit(event) {
+        event.preventDefault();
+        var status = document.getElementById("my-form-status");
+        var data = new FormData(event.target);
+        fetch(event.target.action, {
+          method: form.method,
+          body: data,
+          headers: {
+              'Accept': 'application/json'
+          }
+        }).then(response => {
+          if (response.ok) {
+            status.innerHTML = "Thanks for your submission!";
+            form.reset()
+          } else {
+            response.json().then(data => {
+              if (Object.hasOwn(data, 'errors')) {
+                status.innerHTML = data["errors"].map(error => error["message"]).join(", ")
+              } else {
+                status.innerHTML = "Oops! There was a problem submitting your form"
+              }
+            })
+          }
+        }).catch(error => {
+          status.innerHTML = "Oops! There was a problem submitting your form"
+        });
+      }
+      form.addEventListener("submit", handleSubmit)
+  </script>
   </body>
 </html>
